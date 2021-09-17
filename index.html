@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="en-us">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>    
+		<title>Emmy Awards</title>
+		<style>
+
+			.button-layer {
+				position: fixed !important;
+				/* width: 50%;
+				height: 50%; */
+				bottom: 0px;
+				z-index: 999999;
+				margin-left: 650px;
+			}
+
+			canvas.deepar { 
+				border: 0px none; 
+				background-color: black; 
+				display: block; 
+				margin: auto; 
+				-webkit-tap-highlight-color: rgba(0,0,0,0);
+			}
+
+			body {
+				margin: 0px;
+				padding: 0px;        
+			}
+
+			.footer {
+				position: fixed;
+				left: 0;
+				bottom: 0;
+				width: 100%;
+				color: white;
+				text-align: center;
+			}
+
+			.cr-screen {
+				position: fixed;
+				left: 0;
+				bottom: 0;
+				width: 100%;
+				color: white;
+				text-align: center;
+			}
+
+			#loader-wrapper {
+				position: fixed;
+				top: 0px;
+				left: 0px;
+				width: 100%;
+				height: 100%;
+				background-color: #fff;
+				text-align: center;
+			}
+
+			.btn-capture {
+				border: none;
+				text-align: center;
+				text-decoration: none;
+				display: inline-block;
+				font-size: 16px;
+				/*margin: 4px 2px;*/
+				border-radius: 50%;
+				cursor: pointer;
+				height: 60px;
+				width: 60px;
+				color: white;
+				background-color: red;
+				border: 4px solid #fff;
+				box-shadow: 0 0 0 5px red;
+				margin-bottom: 5%;
+			}
+
+			.loader {
+
+				display: inline-block;
+				position: relative;
+				top: 42%;
+				z-index: 1000;
+
+				width: 90px;
+				height: 90px;
+				margin: auto;
+				background-color: #00f;
+
+				border-radius: 100%;  
+				-webkit-animation: sk-scaleout 1.5s infinite ease-in-out;
+				animation: sk-scaleout 1.5s infinite ease-in-out;
+			}
+
+			@-webkit-keyframes sk-scaleout {
+				0% { -webkit-transform: scale(0) }
+				100% {
+					-webkit-transform: scale(1.0);
+					opacity: 0;
+				}
+			}
+
+			@keyframes sk-scaleout {
+				0% { 
+					-webkit-transform: scale(0);
+					transform: scale(0);
+				} 100% {
+					-webkit-transform: scale(1.0);
+					transform: scale(1.0);
+					opacity: 0;
+				}
+			}
+
+			.effect-carousel {
+				position: fixed !important;
+				width: 100%;
+				height: 130px;
+				bottom: 0px;
+				z-index: 999999;
+				background-color: rgba(255, 255, 255, 0.7);
+			}
+
+			.thumb {
+				margin-top: 15px;
+				margin-bottom: 15px;
+				margin-right: auto;
+				margin-left: auto;
+				position: relative;
+				opacity: 0.8;
+				transition: all 300ms ease;
+				height: 100px;
+			}
+
+			.slick-center .thumb {
+				-moz-transform: scale(1.3);
+				-ms-transform: scale(1.3);
+				-o-transform: scale(1.3);
+				-webkit-transform: scale(1.3);
+				color: #e67e22;
+				opacity: 1;
+				transform: scale(1.3);
+			}
+			.slick-slide {
+				width: 130px;
+			}
+
+			#dim-screen {
+				position:fixed;
+				padding:0;
+				margin:0;
+
+				top:0;
+				left:0;
+
+				width: 100%;
+				height: 100%;
+				background-color: black;
+				background-image: url('images/73rd-emmys-nominations-900x600-1-removebg-preview.png');
+				background-position: center;
+				background-repeat: no-repeat;
+				/*background-size: cover;*/
+			}
+
+			.modal {
+			  display: none; /* Hidden by default */
+			  position: fixed; /* Stay in place */
+			  z-index: 1; /* Sit on top */
+			  padding-top: 100px; /* Location of the box */
+			  left: 0;
+			  top: 0;
+			  width: 100%; /* Full width */
+			  height: 100%; /* Full height */
+			  overflow: auto; /* Enable scroll if needed */
+			  background-color: rgb(0,0,0); /* Fallback color */
+			  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+			}
+
+			/* Modal Content */
+			.modal-content {
+			  background-color: #fefefe;
+			  margin: auto;
+			  padding: 20px;
+			  border: 1px solid #888;
+			  width: 80%;
+			  border-radius: 25px;
+			}
+
+			/* The Close Button */
+			.close {
+			  color: #aaaaaa;
+			  float: right;
+			  font-size: 28px;
+			  font-weight: bold;
+			}
+
+			.close:hover,
+			.close:focus {
+			  color: #000;
+			  text-decoration: none;
+			  cursor: pointer;
+			}
+		</style>
+		<!-- <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/> -->
+
+	</head>
+	<body id="body" style="font-family: sans-serif;">
+
+		<audio id="audio-clap">
+		  <source src="audio/clapping.mp3" type="audio/mpeg">
+		  Your browser does not support the audio element.
+		</audio>
+
+		<canvas  class="deepar" id="deepar-canvas" oncontextmenu="event.preventDefault()"></canvas>
+		<div id="loader-wrapper">
+		<span class="loader"></span></span>
+		</div>
+
+		<div id="dim-screen" style="display: none;" class="first-screen">
+		</div>
+
+		<div class="footer first-screen" onclick="playDeepAR()">
+			<button id="start-btn" class="btn-capture" style="font-family: sans-serif; ">Start</button>
+		</div>
+
+		<div class="cr-screen" style="display: none;font-family: sans-serif;">
+			<button id="capture" class="btn-capture"></button>
+			<!-- <button id="start-video-rec" class="btn">Start Video Record</button>
+			<button id="stop-video-rec" class="btn">Stop Video Record</button> -->
+		</div>
+
+		<!-- <div class="effect-carousel">
+			<div><img class="thumb" src="thumbs/galaxy.png"></div>
+			<div><img class="thumb" src="thumbs/aviators.png"></div>
+			<div><img class="thumb" src="thumbs/beard.png"></div>
+			<div><img class="thumb" src="thumbs/dalmatian.png"></div>
+			<div><img class="thumb" src="thumbs/flowers.png"></div>
+			<div><img class="thumb" src="thumbs/koala.png"></div>
+			<div><img class="thumb" src="thumbs/lion.png"></div>
+			<div><img class="thumb" src="thumbs/teddy_cigar.png"></div>
+		</div> -->
+
+		<!-- The Modal -->
+		<!-- <div id="myModal" class="modal">
+
+			<div class="modal-content">
+				<span class="close">&times;</span>
+				<div style="margin-top: 20px;text-align: center;">
+					<img src="images/second.png" style="max-height: 150px; width: auto;" />
+					<h3 style="margin-bottom: 40px;">Do you want to share this with your friends?</h3>
+					<img id="btn-download" style="max-height: 40px; width: auto; margin-right: 60px;" src="images/download.png"/>
+					<img id="btn-share" style="max-height: 40px; width: auto;" src="images/share.png"/>
+				</div>
+			</div>
+
+		</div> -->
+
+		<script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+		<script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+		<!-- <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script> -->
+		<script type="text/javascript" src="lib/deepar.js"></script>
+		<!-- <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js"></script> -->
+
+		<script type="text/javascript">
+
+			var canvasHeight = window.innerHeight;
+			var canvasWidth = window.innerWidth;
+			
+			// desktop, the width of the canvas is 0.66 * window height and on mobile it's fullscreen
+			if (window.innerWidth > window.innerHeight) {
+				canvasWidth = Math.floor(window.innerHeight*0.66);
+			}
+
+			let deepAR, downloadableFile, downloadableUrl;
+
+			// Logic for record video
+			let deeparCanvas = document.getElementById('deepar-canvas');
+			let audioClapEle = document.getElementById("audio-clap");
+
+			$("#loader-wrapper").hide();
+
+			function playAudio() {
+				var audio = new Audio('audio/first.mp3');
+				audio.play();
+				audio.volume = 0.1;
+
+				setTimeout(function(){
+					audio.volume = 0.2;
+					setTimeout(function(){
+						audio.volume = 0.5;
+					}, 5000);
+				}, 10000);
+			}
+
+			deepAR = DeepAR({ 
+				canvasWidth: canvasWidth, 
+				canvasHeight: canvasHeight,
+				licenseKey: 'your_license_key_goes_here',
+				canvas: deeparCanvas,
+				numberOfFaces: 1,
+				libPath: './lib',
+				segmentationInfoZip: 'segmentation.zip',
+				onInitialize: function() {
+					// start video immediately after the initalization, mirror = true
+					deepAR.startVideo(true);
+
+					// or we can setup the video element externally and call deepAR.setVideoElement (see startExternalVideo function below)
+
+					deepAR.switchEffect(0, 'slot', './effects/background_segmentation_empty', function() {
+					// effect loaded
+					});
+				}
+			});
+
+			deepAR.onCameraPermissionAsked = function() {
+				console.log('camera permission asked');
+			};
+
+			deepAR.onCameraPermissionGranted = function() {
+				console.log('camera permission granted');
+			};
+
+			deepAR.onCameraPermissionDenied = function() {
+				console.log('camera permission denied');
+			};
+
+			deepAR.onScreenshotTaken = function(photo) {
+				let aTag = document.createElement("a");
+				aTag.href = photo;
+				aTag.download = "emmy-awards-2021-screenshot.png";
+				aTag.click();
+				// myModal.style.display = "block";
+				// downloadableUrl = photo;
+				// urltoFile(photo, "emmy-awards-2021-screenshot.png", "image/png").then(file => {
+				// 	downloadableFile = file;
+				// });
+			};
+
+			deepAR.onImageVisibilityChanged = function(visible) {
+				console.log('image visible', visible);
+			};
+
+			deepAR.onFaceVisibilityChanged = function(visible) {
+				console.log('face visible', visible);
+			};
+
+			deepAR.onVideoStarted = function() {
+				var loaderWrapper = document.getElementById('loader-wrapper');
+				loaderWrapper.style.display = 'none';
+			};
+
+			deepAR.onFaceTracked = function(faceData) {
+				// console.log(faceData);
+			};
+
+			deepAR.downloadFaceTrackingModel('lib/models-68-extreme.bin');
+
+			// Store video objects for cleanup
+			var videoObjects = {};
+
+			function playDeepAR() {
+				audioClapEle.play();
+				audioClapEle.pause();
+
+				let count = 3;
+
+				$("#start-btn").css({
+					'font-size': 'xx-large',
+					'font-weight': 'bolder'
+				});
+				$("#start-btn").text(count);
+
+				countable = setInterval(function (){
+
+					count -= 1;
+
+					if (count > 0) {
+
+						$("#start-btn").text(count);
+
+					} else if (count <= 0) {
+
+						clearInterval(countable);
+
+						$(".first-screen").hide();
+
+						// $("#loader-wrapper").show();
+						$("#deepar-canvas").show();
+						$(".cr-screen").show();
+
+						deepAR.switchEffect(0, 'slot', './effects/background_segmentation', function() {
+						// effect loaded
+						});
+
+						setTimeout(function(){
+							// playClapping();
+							audioClapEle.play();
+						}, 1000);
+
+
+					}
+
+				}, 1000);
+
+			}
+
+
+
+			// Click event for screenshot
+			// $("#capture").click(function() {
+			// 	deepAR.takeScreenshot();
+			// });
+
+			var timeout_id = 0,
+			hold_time = 1000,
+			hold_event = false,
+			touchstartevent = false,
+			touchendevent = false,
+			hold_trigger = $('#capture');
+
+			hold_trigger.on("mousedown touchstart", function(e) {
+				if (e.type == "touchstart") {
+
+					timeout_id = setTimeout(function() {
+						hold_event = true;
+						mediaRecorder.start();
+						$('#capture').css("border-radius", "unset");
+						setTimeout(function() {
+							clearTimeout(timeout_id);
+							hold_event = false;
+							mediaRecorder.stop();
+							$('#capture').css("border-radius", "50%");
+							myModal.style.display = "block";
+						}, 20000);
+					}, hold_time);
+
+					touchstartevent = true;
+
+				} else {
+					if (touchstartevent == false) {
+						timeout_id = setTimeout(function() {
+							hold_event = true;
+							mediaRecorder.start();
+							$('#capture').css("border-radius", "unset");
+							setTimeout(function() {
+								clearTimeout(timeout_id);
+								hold_event = false;
+								mediaRecorder.stop();
+								$('#capture').css("border-radius", "50%");
+								myModal.style.display = "block";
+							}, 20000);
+						}, hold_time);
+					} else {
+						touchstartevent == false;
+					}
+				}
+			}).on("mouseup touchend", function(e) {
+				if (e.type == "touchend") {
+					clearTimeout(timeout_id);
+					touchstartevent == true;
+					if (hold_event) {
+						hold_event = false;
+						mediaRecorder.stop();
+						$('#capture').css("border-radius", "50%");
+					} else {
+						deepAR.takeScreenshot();
+						// $("body").fadeOut(100).fadeIn(100);
+					}
+				} else {
+					if (touchstartevent == false) {
+						clearTimeout(timeout_id);
+						if (hold_event) {
+							hold_event = false;
+							mediaRecorder.stop();
+							$('#capture').css("border-radius", "50%");
+						} else {
+							deepAR.takeScreenshot();
+							// $("body").fadeOut(100).fadeIn(100);
+						}
+					} else {
+						touchstartevent == false;
+					}
+				}
+			});
+
+			// hold_trigger.on('touchstart', function() {
+			// 	timeout_id = setTimeout(function() {
+			// 		hold_event = true;
+			// 		mediaRecorder.start();
+			// 	}, hold_time);
+			// }).on('touchend', function() {
+			// 	clearTimeout(timeout_id);
+			// 	if (hold_event) {
+			// 		hold_event = false;
+			// 		mediaRecorder.stop();
+			// 	} else {
+			// 		deepAR.takeScreenshot();
+			// 	}
+			// });
+
+			let videoStream = deeparCanvas.captureStream(30);
+			let mediaRecorder = new MediaRecorder(videoStream);
+
+			let chunks = [];
+
+			// Logic for record video
+			mediaRecorder.onstop = function(e) {
+				var blob = new Blob(chunks, { 'type' : 'video/mp4' });
+				chunks = [];
+				var videoURL = URL.createObjectURL(blob);
+
+				let avTag = document.createElement("a");
+				avTag.href = videoURL;
+				avTag.download = "emmy-awards-2021-screenshot.mp4";
+				avTag.click();
+
+				// myModal.style.display = "block";
+				// downloadableUrl = videoURL;
+				// urltoFile(videoURL, "emmy-awards-2021-screenshot.mp4", "video/mp4").then(file => {
+				// 	downloadableFile = file;
+				// });
+			};
+
+			mediaRecorder.ondataavailable = function(e) {
+				chunks.push(e.data);
+			};
+
+			// $("#start-video-rec").click(function() {
+			// 	mediaRecorder.start();
+			// });
+
+			// $("#stop-video-rec").click(function() {
+			// 	mediaRecorder.stop();
+			// });
+
+
+			function playClapping() {
+				var audioClap = new Audio('audio/clapping.wav');
+				audioClap.muted = false;
+				audioClap.load();
+				audioClap.play();
+			}
+
+			function startExternalVideo() {
+				cleanupVideoObjects();
+				// create video element
+				var video = document.createElement('video');
+				video.muted = true;
+				video.loop = true;
+				video.controls = true;
+				video.setAttribute('playsinline', 'playsinline');
+				video.style.width = '100%';
+				video.style.height = '100%';
+
+				// put it somewhere in the DOM
+				var videoContainer = document.createElement('div');
+				videoContainer.appendChild(video);
+				videoContainer.style.width = '1px';
+				videoContainer.style.height = '1px';
+				videoContainer.style.position = 'absolute';
+				videoContainer.style.top = '0px';
+				videoContainer.style.left = '0px';
+				videoContainer.style['z-index'] = '-1';
+				document.body.appendChild(videoContainer);
+	
+				videoObjects.videoContainer = videoContainer;
+				videoObjects.video = video;
+					
+				navigator.mediaDevices.getUserMedia({audio: true, video: true}).then(function(stream) {
+					try {
+						video.srcObject = stream;
+					} catch (error) {
+						video.src = URL.createObjectURL(stream);
+					}
+					setTimeout(function() {
+						video.play();
+					}, 50);
+				}).catch(function(error) {
+						console.log('error in video play:', error);
+				});
+
+				// tell the DeepAR SDK about our new video element
+				deepAR.setVideoElement(video, true);
+					
+				var loaderWrapper = document.getElementById('loader-wrapper');
+				loaderWrapper.style.display = 'none';
+			}
+
+			function cleanupVideoObjects() {
+				if (videoObjects.length > 0){  
+						videoObjects.videoContainer.parentNode.removeChild(videoObjects.videoContainer);
+						videoObjects.videoContainer = null;
+						if (videoObjects.video.srcObject) {
+							//getUserMedia starts a stream, all tracks on all streams need to be stoppedbefore calling getUserMedia again
+							videoObjects.video.srcObject.getTracks().forEach(track => track.stop())
+						}
+						videoObjects.video.pause();
+						videoObjects = {};
+				}
+			}
+
+			// Position the carousel to cover the canvas
+			if (window.innerWidth > window.innerHeight) {
+				var width = Math.floor(window.innerHeight*0.66);
+				// var carousel = document.getElementsByClassName('effect-carousel')[0];
+				// carousel.style.width = width + 'px';
+				// carousel.style.marginLeft = (window.innerWidth-width)/2 + "px";
+			}
+
+			// $(document).ready(function() {
+			// 	$('.effect-carousel').slick({
+			// 		slidesToShow: 1,
+			// 		centerMode: true,
+			// 		focusOnSelect: true,
+			// 		arrows: false,
+			// 		accessibility: false,
+			// 		variableWidth: true
+			// 	});
+
+			// 	var effects = [
+			// 		'./effects/background_segmentation',
+			// 		'./effects/aviators',
+			// 		'./effects/beard',
+			// 		'./effects/dalmatian',
+			// 		'./effects/flowers',
+			// 		'./effects/koala',
+			// 		'./effects/lion',
+			// 		'./effects/teddycigar'
+			// 	];
+
+			// 	$('.effect-carousel').on('afterChange', function(event, slick, currentSlide){
+			// 		deepAR.switchEffect(0, 'slot', effects[currentSlide]);
+			// 	});
+
+			// });
+		</script>
+
+		<script type="text/javascript">
+			// Get the modal
+			// var myModal = document.getElementById("myModal");
+
+			// Get the button that opens the modal
+			// var myBtn = document.getElementById("myBtn");
+
+			// Get the <span> element that closes the modal
+			// var close = document.getElementsByClassName("close")[0];
+
+			// When the user clicks on <span> (x), close the modal
+			// close.onclick = function() {
+			// 	myModal.style.display = "none";
+			// }
+
+			// When the user clicks anywhere outside of the modal, close it
+			// window.onclick = function(event) {
+			//   if (event.target == myModal) {
+			//     myModal.style.display = "none";
+			//   }
+			// }
+
+			function urltoFile(url, filename, mimeType){
+				return Promise.resolve(fetch(url)
+					.then(function(res){return res.arrayBuffer();})
+					.then(function(buf){return new File([buf], filename, {type:mimeType});})
+				);
+			}
+
+			$( "#btn-download" ).click(function() {
+				let aTag = document.createElement("a");
+				aTag.href = downloadableUrl;
+				aTag.download = "";
+				aTag.click();
+				myModal.style.display = "none";
+			});
+
+			$( "#btn-share" ).click(function() {
+
+				if (navigator.share) {
+					const shareData = {
+						files: [downloadableFile],
+						title: downloadableFile.name,
+					}
+
+					navigator.share(shareData)
+					.then(() => alert('Successful share'))
+					.catch((error) => alert('Error sharing', error));
+				}
+			});
+
+		</script>
+	</body>
+</html>
+
+
